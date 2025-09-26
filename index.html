@@ -610,46 +610,40 @@ updateHUD(); resetTimer();
 if('speechSynthesis' in window){ window.speechSynthesis.onvoiceschanged = ()=>{}; }
 </script>
 
-<!-- ===== Global Leaderboard via Apps Script JSONP (ALL users) ===== -->
+<!-- ===== Global Leaderboard via Apps Script JSONP (ALL users) — v2 case-insensitive ===== -->
 <script>
 (function(){
-  const GAS_EXEC = "https://script.google.com/macros/s/AKfycbysvNuBvluj5-FraAJbfLcFaZizUb8ZUyS5dt1TBwsVFsv87viPzFfjWaTMgJ84Xy9H/exec"; // 已填入你的 /exec
+  const GAS_EXEC = "https://script.google.com/macros/s/AKfycbysvNuBvluj5-FraAJbfLcFaZizUb8ZUyS5dt1TBwsVFsv87viPzFfjWaTMgJ84Xy9H/exec";
+  const SHEET_ID="1vh_9SDYRtxg3TiGnex9ZVXZnvtkiXHs-SW69-T6t6qA", GID="0";
+  const GVIZ_URL="https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/gviz/tq?gid="+GID+"&tqx=out:json";
 
-  // GViz 後備（若 GAS 暫時無法取得時，且試算表設為公開可讀）
-  const SHEET_ID = "1vh_9SDYRtxg3TiGnex9ZVXZnvtkiXHs-SW69-T6t6qA";
-  const GID = "0";
-  const GVIZ_URL = "https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/gviz/tq?gid="+GID+"&tqx=out:json";
-
-  const tbody = document.querySelector('#lbTable tbody');
-  const btnRefresh = document.getElementById('lbRefresh');
-  const clsFilter = document.getElementById('lbFilterClass');
-  const nameFilter = document.getElementById('lbFilterName');
+  const tbody=document.querySelector('#lbTable tbody');
+  const clsFilter=document.getElementById('lbFilterClass');
+  const nameFilter=document.getElementById('lbFilterName');
+  document.getElementById('lbRefresh')?.addEventListener('click', refresh);
 
   (function ensureRankBadge(){
-    try{
-      const scoreBadge = document.getElementById('score')?.parentElement;
-      const rowWrap = scoreBadge?.parentElement;
-      if (rowWrap && !document.getElementById('globalRankBadge')) {
-        const span = document.createElement('span');
-        span.className = 'badge';
-        span.id = 'globalRankBadge';
-        span.innerHTML = 'Rank: <b id="myRank">—</b>';
-        rowWrap.appendChild(span);
-      }
-    }catch(_){}
+    const scoreBadge = document.getElementById('score')?.parentElement;
+    const rowWrap = scoreBadge?.parentElement;
+    if (rowWrap && !document.getElementById('globalRankBadge')) {
+      const span = document.createElement('span');
+      span.className = 'badge'; span.id = 'globalRankBadge';
+      span.innerHTML = 'Rank: <b id="myRank">—</b>';
+      rowWrap.appendChild(span);
+    }
   })();
 
-  function setMyRankText(text){ const el = document.getElementById('myRank'); if (el) el.textContent = text; }
   function toNum(x){ const n=Number(x); return Number.isFinite(n)?n:0; }
   function sortRule(a,b){ return (toNum(b.score)-toNum(a.score))||(toNum(b.streak)-toNum(a.streak))||(toNum(a.attempts)-toNum(b.attempts)); }
   function esc(s){ return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function setMyRankText(t){ const el=document.getElementById('myRank'); if(el) el.textContent=t; }
 
   function render(full){
     const cf=(clsFilter?.value||'').trim().toLowerCase();
     const nf=(nameFilter?.value||'').trim().toLowerCase();
     const filtered = full.filter(r => (!cf || String(r.class).toLowerCase().includes(cf)) && (!nf || String(r.name).toLowerCase().includes(nf)));
     tbody.innerHTML='';
-    if (!filtered.length){ tbody.innerHTML='<tr><td colspan="6" style="color:#6b7280">No data</td></tr>'; return; }
+    if(!filtered.length){ tbody.innerHTML='<tr><td colspan="6" style="color:#6b7280">No data</td></tr>'; return; }
     filtered.forEach(r=>{
       const tr=document.createElement('tr');
       tr.innerHTML = `<td>${r.rank}</td><td>${esc(r.class)}</td><td>${esc(r.name)}</td>
@@ -666,82 +660,63 @@ if('speechSynthesis' in window){ window.speechSynthesis.onvoiceschanged = ()=>{}
     }catch(_){ setMyRankText('—'); }
   }
 
-  // --- JSONP route ---
+  // JSONP
   window.LB_CB = function(payload){
     try{
       const arr = (payload && payload.ranks) ? payload.ranks : [];
       const ranked = arr.slice().sort(sortRule).map((r,i)=> ({...r, rank: (r.rank||i+1)}));
-      window.__GLOBAL_RANKS__ = ranked;
-      render(ranked);
-      updateMyBadge(ranked);
+      window.__GLOBAL_RANKS__ = ranked; render(ranked); updateMyBadge(ranked);
     }catch(e){ console.error(e); }
   };
   function loadJSONP(){
     return new Promise((resolve,reject)=>{
-      const script = document.createElement('script');
-      const sep = GAS_EXEC.includes('?') ? '&' : '?';
-      script.src = GAS_EXEC + sep + 'action=ranks&format=jsonp&callback=LB_CB&_ts=' + Date.now();
-      script.onerror = reject;
-      script.onload = ()=> resolve(true);
-      document.body.appendChild(script);
-      setTimeout(()=>script.remove(), 2000);
+      const script=document.createElement('script');
+      const sep=GAS_EXEC.includes('?')?'&':'?';
+      script.src=GAS_EXEC+sep+'action=ranks&format=jsonp&callback=LB_CB&_ts='+Date.now();
+      script.onerror=reject; script.onload=()=>resolve(true);
+      document.body.appendChild(script); setTimeout(()=>script.remove(),2000);
     });
   }
 
-  // --- GViz fallback ---
+  // GViz fallback with case-insensitive header match
   function loadGViz(){
     return new Promise((resolve,reject)=>{
-      const cb = (resp)=>{
+      const cb=(resp)=>{
         try{
-          const cols = resp.table.cols.map(c=>(c&&(c.label||c.id)||'').toString().trim());
-          const idx = names => names.map(n=>cols.indexOf(n)).find(i=>i>=0);
+          const cols=(resp.table.cols||[]).map(c=>String((c&&(c.label||c.id))||'').trim());
+          const lower=cols.map(s=>s.toLowerCase());
+          const idx=(names)=>{ for(let n of names){ const j=lower.indexOf(String(n).toLowerCase()); if(j>=0) return j; } return -1; };
           const iC=idx(['班級','class']), iN=idx(['姓名','name']), iS=idx(['分數','score','總分']), iSt=idx(['連勝','streak']), iA=idx(['答題數','attempts','嘗試數']);
-          const rows = resp.table.rows.map(r => ({
+          const rows=(resp.table.rows||[]).map(r=>({
             class: iC>=0 ? (r.c[iC]?.v ?? '') : '', name: iN>=0 ? (r.c[iN]?.v ?? '') : '',
             score: toNum(iS>=0 ? (r.c[iS]?.v ?? 0) : 0), streak: toNum(iSt>=0 ? (r.c[iSt]?.v ?? 0) : 0),
             attempts: toNum(iA>=0 ? (r.c[iA]?.v ?? 0) : 0)
           })).filter(r=>r.name);
-          // dedupe + rank
           const m=new Map(); rows.forEach(r=>{
             const k=(String(r.class||'').trim().toLowerCase()+'|'+String(r.name||'').trim().toLowerCase());
             if(!m.has(k)) { m.set(k,r); return; }
-            const cur=m.get(k);
-            const better = (sortRule(r,cur) < 0) ? cur : r;
+            const cur=m.get(k); const better=(sortRule(r,cur) < 0) ? cur : r;
             m.set(k, better);
           });
-          const dedup = Array.from(m.values()).sort(sortRule).map((r,i)=>({...r, rank:i+1}));
-          window.__GLOBAL_RANKS__ = dedup;
-          render(dedup);
-          updateMyBadge(dedup);
+          const dedup=Array.from(m.values()).sort(sortRule).map((r,i)=>({...r, rank:i+1}));
+          window.__GLOBAL_RANKS__=dedup; render(dedup); updateMyBadge(dedup);
           cleanup(); resolve(true);
         }catch(e){ console.error(e); cleanup(); reject(e); }
       };
-      window.google = window.google || {};
-      window.google.visualization = window.google.visualization || {};
-      window.google.visualization.Query = window.google.visualization.Query || {};
-      const prev = window.google.visualization.Query.setResponse;
-      window.google.visualization.Query.setResponse = cb;
-      const s=document.createElement('script');
-      s.src = GVIZ_URL + "&_ts=" + Date.now();
-      s.onerror = (e)=>{ cleanup(); reject(e); };
+      window.google=window.google||{}; window.google.visualization=window.google.visualization||{}; window.google.visualization.Query=window.google.visualization.Query||{};
+      const prev=window.google.visualization.Query.setResponse; window.google.visualization.Query.setResponse=cb;
+      const s=document.createElement('script'); s.src=GVIZ_URL+"&_ts="+Date.now(); s.onerror=(e)=>{ cleanup(); reject(e); };
       document.head.appendChild(s);
-      function cleanup(){ if(prev) window.google.visualization.Query.setResponse = prev;
+      function cleanup(){ if(prev) window.google.visualization.Query.setResponse=prev;
         document.querySelectorAll('script[src*="gviz/tq"]').forEach(t=>t.remove()); }
     });
   }
 
-  async function refresh(){
-    try{
-      await loadJSONP().catch(async ()=>{ await loadGViz(); });
-    }catch(e){ console.error(e); }
-  }
+  async function refresh(){ try{ await loadJSONP().catch(async ()=>{ await loadGViz(); }); }catch(e){ console.error(e); } }
+  clsFilter?.addEventListener('input', ()=> window.__GLOBAL_RANKS__ && render(window.__GLOBAL_RANKS__));
+  nameFilter?.addEventListener('input', ()=> window.__GLOBAL_RANKS__ && render(window.__GLOBAL_RANKS__));
 
-  document.getElementById('lbRefresh')?.addEventListener('click', refresh);
-  document.getElementById('lbFilterClass')?.addEventListener('input', ()=> window.__GLOBAL_RANKS__ && render(window.__GLOBAL_RANKS__));
-  document.getElementById('lbFilterName')?.addEventListener('input', ()=> window.__GLOBAL_RANKS__ && render(window.__GLOBAL_RANKS__));
-
-  refresh();
-  setInterval(refresh, 10000);
+  refresh(); setInterval(refresh, 10000);
 })();
 </script>
 
