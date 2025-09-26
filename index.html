@@ -1,600 +1,749 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ESL2 – What do/does … have?（Fill-in Choices, Leaderboard + Admin, v12.6）</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ESL2 – Do/Does Game (Auto Upload • Fixed URL)</title>
 <style>
-  :root{ --line:#d9dee8; --muted:#6b7280; --ink:#0f172a; --bg:#ffffff;
-         --primary:#6366f1; --secondary:#64748b; --success:#16a34a; --danger:#dc2626; --info:#0ea5e9; --surface:#f8fafc; }
-  html,body{height:100%}
-  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans"; color:var(--ink); background:var(--bg)}
-  .container{max-width:1100px;margin:16px auto;padding:0 12px}
-  h1{font-size:1.5rem;margin:0 0 4px}
-  .sub{color:var(--muted);font-size:.92rem;margin-bottom:10px}
-  .section{border:1px solid var(--line);border-radius:.75rem;background:#fff;padding:12px;margin-bottom:12px}
-  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .input,select{padding:6px 10px;border:1px solid var(--line);border-radius:.375rem;font-size:1rem;background:#fff}
-  .btn{padding:.48rem .85rem;border-radius:.6rem;border:1px solid transparent;cursor:pointer;font-size:1rem;user-select:none}
-  .btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
-  .btn-outline{background:#fff;color:var(--secondary);border-color:var(--secondary)}
-  .btn-danger{background:var(--danger);border-color:var(--danger);color:#fff}
-  .btn-ghost{background:#fff;border-color:transparent;color:var(--secondary)}
-  .badge{display:inline-block;border:1px solid var(--line);border-radius:999px;background:#fff;padding:.25rem .55rem;font-size:.9rem;color:var(--muted)}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-  .panel{position:relative;border:1px dashed var(--line);border-radius:.75rem;background:#f8fafc;min-height:170px;display:flex;align-items:center;justify-content:center;color:#475569;margin:8px 0;overflow:hidden}
-  .q{font-size:1.42rem;margin:8px 0 10px; color:#0f172a}
-  .blank{display:inline-block;min-width:4.2rem;border-bottom:2px solid #cbd5e1;text-align:center;margin:0 .25rem}
-  .options{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:12px}
-  @media(min-width:720px){.options{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  .opt{padding:16px;border:1px solid var(--line);border-radius:.6rem;background:#fff;text-align:center;cursor:pointer;
-       font-size:1.34rem; line-height:1.2}
-  .opt.correct{border-color:#16a34a;box-shadow:0 0 0 .2rem rgba(22,163,74,.25)}
-  .opt.wrong{border-color:#dc2626;box-shadow:0 0 0 .2rem rgba(220,38,38,.25)}
-  .progress{height:10px;background:#e5e7eb;border-radius:10rem;overflow:hidden}
-  .progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#16a34a,#f59e0b,#dc2626)}
-  .small{font-size:.95rem;color:var(--muted)}
-  .status{min-height:20px;margin-top:6px; white-space:pre-wrap}
-  /* Tabs */
-  .tabs{display:flex;gap:8px;margin:8px 0 12px}
-  .tab{padding:.5rem .9rem;border:1px solid var(--line);border-radius:999px;cursor:pointer}
-  .tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-  .tabpanel{display:none}
-  .tabpanel.show{display:block}
-  /* Overlays & FX canvases */
-  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-  .emoji{font-size:3.6rem;opacity:0;transform:scale(.6);transition:transform .18s, opacity .18s; filter:drop-shadow(0 2px 4px rgba(0,0,0,.15))}
-  .emoji.show{opacity:1;transform:scale(1)}
-  .popword{position:absolute;bottom:16px;left:50%;transform:translateX(-50%) scale(.85);font-size:2rem;font-weight:800;opacity:0;
-           transition:transform .22s, opacity .22s; text-shadow:0 2px 6px rgba(0,0,0,.15)}
-  .popword.show{opacity:1;transform:translateX(-50%) scale(1)}
-  canvas.fx{position:absolute;inset:0;pointer-events:none}
-  .shake{animation:shake .3s ease}
-  @keyframes shake{ 0%{transform:translateX(0)} 25%{transform:translateX(-6px)} 50%{transform:translateX(6px)} 75%{transform:translateX(-3px)} 100%{transform:translateX(0)} }
-  .failPic{position:absolute; top:12px; right:12px; width:64px; height:64px; opacity:.9; filter:drop-shadow(0 2px 2px rgba(0,0,0,.15))}
-  /* Leaderboard */
-  table{width:100%;border-collapse:collapse}
-  th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+  :root{
+    --primary:#4f46e5; --pill-bg:#eef2ff; --pill-fg:#3730a3; --bar:#60a5fa;
+    --card:#fff; --ink:#111; --muted:#666; --border:#ddd; --bg:#fafafa;
+  }
+  body{font-family:Arial,Helvetica,sans-serif;margin:20px;background:var(--bg);color:var(--ink)}
+  h1{font-size:26px;margin:0 0 10px}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  select,button,input{font-size:14px;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:#fff}
+  button{cursor:pointer}
+  button.primary{background:var(--primary);color:#fff;border:none}
+  button.danger{background:#dc2626;color:#fff;border:none}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .pill{background:var(--pill-bg);color:var(--pill-fg);border-radius:20px;padding:4px 10px;font-size:12px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin:12px 0;max-width:1200px}
+  .q{font-size:22px;margin:8px 0}
+  .choices{display:flex;flex-wrap:wrap;gap:10px}
+  .choices button{padding:10px 14px;font-size:18px;border:2px solid var(--border);border-radius:12px;background:#fff}
+  .choices button.correct{background:#e6ffed;border-color:#86efac}
+  .choices button.wrong{background:#ffe6e6;border-color:#fca5a5}
+  .feedback{font-weight:bold;margin-top:10px}
+  .ok{color:#16a34a}.bad{color:#dc2626}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{border:1px solid var(--border);padding:6px}
   th{background:#f1f5f9}
-  tr.highlight{background:#fef3c7}
+  .muted{color:var(--muted)}
+  .badge{display:inline-block;margin-left:6px;background:#fde68a;color:#7c2d12;border-radius:999px;padding:2px 8px;font-size:11px}
+  #pic{margin-top:10px;height:180px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .imgwrap{width:100%;height:180px;display:flex;align-items:center;justify-content:center}
+  .imgwrap img{max-height:170px;max-width:92%;object-fit:contain;border-radius:10px;border:1px solid #e5e7eb;background:#fff}
+  .timerBox{display:flex;align-items:center;gap:10px;margin:6px 0 8px}
+  .timepill{background:#fef3c7;color:#92400e;border-radius:20px;padding:4px 10px;font-size:14px}
+  .barwrap{flex:1;height:10px;background:#eee;border-radius:999px;overflow:hidden}
+  .bar{height:100%;width:100%;background:var(--bar);transition:width .2s linear}
+  #confettiCanvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+  .bigNext{margin-top:12px;width:100%;padding:14px 16px;font-size:20px;border-radius:12px;border:none}
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <h1>ESL2 – What do/does … have?</h1>
-    <div class="sub">Flow: Class+Name → <b>Set Player</b> → <b>New Question</b>；8s timer；last 3s voice+beep；auto upload to Teacher</div>
-  </header>
+<h1>ESL2 – Do/Does Game</h1>
 
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab active" data-tab="play">Play</button>
-    <button class="tab" data-tab="leaderboard">Leaderboard</button>
-    <button class="tab" data-tab="admin">Admin / Transfer</button>
+<!-- 玩家與模式 -->
+<div class="card">
+  <div class="toolbar">
+    <label>Player: <input id="playerName" placeholder="Enter name" /></label>
+    <button id="btnSetPlayer" class="primary">Set / Switch Player</button>
+
+    <label>Mode:
+      <select id="mode">
+        <option value="mix">Mix</option>
+        <option value="Q">A) Do/Does</option>
+        <option value="AUX">B) do / don't / does / doesn't</option>
+        <option value="SUBJ">C) Answer Subject</option>
+        <option value="YN">D) Yes / No</option>
+      </select>
+    </label>
+
+    <label>Pictures:
+      <select id="picMode">
+        <option value="images" selected>External Images (color)</option>
+        <option value="icons">Icons (fallback)</option>
+      </select>
+    </label>
+
+    <button id="btnNew" class="primary" disabled>New Question</button>
+    <button id="btnReveal">Reveal</button>
+    <button id="btnReset">Reset</button>
+
+    <span class="pill">Current: <span id="currentPlayer" class="muted">—</span></span>
+    <span class="pill" id="streakPill">Streak: 0</span>
+    <span class="pill" id="score">Score: 0</span>
+    <span class="pill" id="attempts">Attempts: 0</span>
+    <span class="pill" id="accuracy">Accuracy: 0%</span>
   </div>
-
-  <!-- PLAY -->
-  <section id="tab-play" class="tabpanel show">
-    <div class="section">
-      <div class="toolbar">
-        <label>Player:</label>
-        <input id="classInput" class="input" placeholder="Class e.g., 3A" style="max-width:130px">
-        <input id="nameInput" class="input" placeholder="Enter name">
-        <button class="btn btn-primary" id="setPlayer">Set / Switch Player</button>
-        <label>Mode:</label>
-        <select id="mode" class="input">
-          <option value="mix" selected>Mix: subject / some-any / have-has / comprehensive</option>
-          <option value="subjectOnly">Subject only</option>
-          <option value="someAnyOnly">some / any only</option>
-          <option value="haveHasOnly">have / has only</option>
-          <option value="comprehensiveOnly">Comprehensive only</option>
-        </select>
-        <button class="btn btn-outline" id="newQ">New Question</button>
-        <button class="btn btn-outline" id="reveal">Reveal</button>
-        <button class="btn btn-outline" id="reset">Reset</button>
-      </div>
-      <div id="status" class="small status"></div>
-    </div>
-
-    <div class="section">
-      <div class="row">
-        <div class="badge">Time: <span id="count">8.0s</span></div>
-        <div class="row" style="gap:6px">
-          <span class="badge">Player: <span id="who">—</span></span>
-          <span class="badge">Class: <span id="whoClass">—</span></span>
-          <span class="badge">Score: <span id="score">0</span></span>
-          <span class="badge">Streak: <span id="streak">0</span></span>
-        </div>
-      </div>
-      <div class="progress" style="margin:8px 0 10px"><i id="bar"></i></div>
-
-      <div class="panel" id="playPanel">
-        <!-- Success overlays -->
-        <div class="overlay" id="ov-success">
-          <div id="emojiHappy" class="emoji">😄🎉</div>
-          <div id="wordHappy" class="popword" style="color:#16a34a">GREAT!</div>
-          <canvas id="fx1" class="fx"></canvas> <!-- confetti -->
-          <canvas id="fx2" class="fx"></canvas> <!-- stars -->
-          <canvas id="fx3" class="fx"></canvas> <!-- balloons -->
-        </div>
-        <!-- Fail overlays -->
-        <div class="overlay" id="ov-fail">
-          <img id="failPic" class="failPic" alt="fail-pic" />
-          <div id="emojiSad" class="emoji">😭</div>
-          <div id="wordSad" class="popword" style="color:#dc2626">OOPS! TRY AGAIN!</div>
-          <canvas id="fx4" class="fx"></canvas> <!-- tears -->
-          <canvas id="fx5" class="fx"></canvas> <!-- thunder -->
-          <canvas id="fx6" class="fx"></canvas> <!-- sweat -->
-        </div>
-      </div>
-
-      <div class="q" id="question">—</div>
-      <div class="options" id="options"></div>
-
-      <div class="toolbar" style="margin-top:10px">
-        <button class="btn btn-primary" id="nextBtn">Next / New Question (Enter)</button>
-        <div class="small" id="toast" style="min-height:20px"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- LEADERBOARD -->
-  <section id="tab-leaderboard" class="tabpanel">
-    <div class="section">
-      <div class="toolbar">
-        <input id="lbFilterClass" class="input" placeholder="Filter by class (e.g., 3A)" style="max-width:180px">
-        <input id="lbFilterName" class="input" placeholder="Search name…" style="max-width:220px">
-        <button class="btn btn-outline" id="lbRefresh">Refresh</button>
-      </div>
-      <div class="section">
-        <table id="lbTable">
-          <thead><tr><th>#</th><th>Class</th><th>Name</th><th>Score</th><th>Streak</th><th>Attempts</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ADMIN -->
-  <section id="tab-admin" class="tabpanel">
-    <div class="section">
-      <h3 style="margin:6px 0 10px">Admin / Transfer</h3>
-      <div class="toolbar" style="gap:10px;flex-wrap:wrap">
-        <button class="btn btn-primary" id="btnSend">📡 Send to Teacher (Auto)</button>
-        <button class="btn btn-outline" id="btnExportJson">💾 Export JSON (Backup)</button>
-        <button class="btn btn-outline" id="btnExportCsv">📥 Download Records CSV</button>
-        <input type="file" id="importFile" style="display:none" accept=".json">
-        <button class="btn btn-outline" id="btnImport">⬆️ Import JSON (PIN)</button>
-        <button class="btn btn-danger" id="btnClear">🗑️ Clear ALL Data (PIN)</button>
-      </div>
-      <div class="small" style="margin-top:8px">Send / Export 不需 PIN；Import / Clear 需 PIN（PIN 不顯示）。</div>
-      <div class="small" id="adminStatus" style="margin-top:8px"></div>
-    </div>
-
-    <div class="section">
-      <h3 style="margin:6px 0 10px">Game Record (This Session)</h3>
-      <div class="toolbar"><button class="btn btn-ghost" id="btnShowRaw">Toggle Raw JSON</button></div>
-      <pre id="raw" style="display:none;max-height:240px;overflow:auto;background:#0f172a;color:#e5e7eb;padding:10px;border-radius:.5rem"></pre>
-    </div>
-  </section>
 </div>
 
+<!-- 老師工具（Send/Export 無 PIN；Import/Clear 要 PIN） -->
+<div class="card">
+  <h3>Admin / Transfer</h3>
+  <div class="toolbar">
+    <button id="btnSend" class="primary" title="Auto upload to teacher sheet (no PIN)">📡 Send to Teacher (Auto)</button>
+    <button id="btnExport" title="Export all data (no PIN)">💾 Export JSON (Backup)</button>
+    <button id="btnImport" title="Import JSON (need PIN)">⬆️ Import JSON (PIN)</button>
+    <button id="btnClearAll" class="danger" title="Clear ALL local data on THIS device (need PIN)">🗑️ Clear ALL Data (PIN)</button>
+  </div>
+  <div class="muted" style="margin-top:6px">Send / Export 不需 PIN；Import / Clear 需 PIN（PIN 不顯示）。</div>
+</div>
+
+<!-- 出題卡 -->
+<div class="card" id="quizCard">
+  <div id="hint">Enter player name, set player, then click “New Question”.</div>
+  <div class="timerBox">
+    <span class="timepill">Time: <span id="timeLeft">8</span>s</span>
+    <div class="barwrap"><div class="bar" id="timeBar"></div></div>
+  </div>
+  <div id="pic"><span class="muted">Picture will appear here.</span></div>
+  <div class="muted" style="font-size:12px">若學校網路擋外圖，切到「Icons (fallback)」。</div>
+  <div class="q" id="question">—</div>
+  <div class="choices" id="choices"></div>
+  <button id="btnNewBelow" class="primary bigNext" disabled>Next / New Question (Enter)</button>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<!-- 本次遊戲紀錄 -->
+<div class="card">
+  <h3>Game Record (This Session)</h3>
+  <div class="toolbar"><button id="btnDownloadLog">⬇️ Download Records CSV</button></div>
+  <table>
+    <thead><tr><th>#</th><th>Player</th><th>Mode</th><th>Prompt</th><th>Your Answer</th><th>Correct</th><th>✓/✗</th><th>Time (s)</th></tr></thead>
+    <tbody id="log"></tbody>
+  </table>
+</div>
+
+<!-- 排行榜（所有人） -->
+<div class="card">
+  <h3>Leaderboard (All Players)
+    <span id="leaders" class="badge"></span>
+  </h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Rank</th><th>Player</th><th>Attempts</th><th>Correct</th>
+        <th>Total Time (s)</th><th>Avg Time (s)</th><th>Best Streak</th><th>Accuracy</th>
+      </tr>
+    </thead>
+    <tbody id="board"></tbody>
+  </table>
+</div>
+
+<!-- 全部歷史（可篩選） -->
+<div class="card">
+  <h3>All Players – Full History</h3>
+  <div class="toolbar">
+    <label>Filter:
+      <select id="playerFilter"><option value="__ALL__" selected>All Players</option></select>
+    </label>
+    <button id="btnRefreshHistory">Refresh</button>
+    <button id="btnDownloadHistory">⬇️ Download Filtered CSV</button>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th><th>Player</th><th>Mode</th><th>Prompt</th>
+        <th>Your Answer</th><th>Correct</th><th>✓/✗</th><th>Time (s)</th><th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody id="allRecords"></tbody>
+  </table>
+</div>
+
+<canvas id="confettiCanvas"></canvas>
+
 <script>
-/* ===== TABS ===== */
-document.querySelectorAll('.tab').forEach(b=>{
-  b.onclick=()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    const id='tab-'+b.dataset.tab;
-    document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('show'));
-    document.getElementById(id).classList.add('show');
-  };
-});
+/* ====== CONFIG ====== */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJ3fC0NfWKSVDi2BiRRL_FDOssm2KJlX3CvX5xRqJcn0cmrqTYVBupfaIJTCX8381G9w/exec";
+const TEACHER_PIN = "EslEsl8700";
+const COUNTDOWN_SECONDS = 8;
+const PRAISE = ["Well done!","Good job!","You’re great!","Excellent!","Awesome!"];
+const NEG_FEEDBACK = ["Oops!","Oh no!","No points!","Try again!","Not this time!"];
 
-/* ===== CONFIG ===== */
-const CONFIG = {
-  scriptUrl: "https://script.google.com/macros/s/AKfycbysvNuBvluj5-FraAJbfLcFaZizUb8ZUyS5dt1TBwsVFsv87viPzFfjWaTMgJ84Xy9H/exec",
-  pin: "2468" // 可改
+const items = [
+  "popcorn","candy","peanuts","crackers","potato chips",
+  "chalk","paint","tape","scissors","glue","paper","ribbon","string","magnets",
+  "calculators","colored pencils","rubber bands","push pins","paint brushes","staplers"
+];
+
+/* 20 張彩色圖（Pixabay） */
+const IMAGES = {
+  popcorn: "https://cdn.pixabay.com/photo/2017/08/10/23/48/popcorn-2627497_640.jpg",
+  candy: "https://cdn.pixabay.com/photo/2016/03/04/12/01/candies-1239432_640.jpg",
+  peanuts: "https://cdn.pixabay.com/photo/2016/11/23/15/31/peanuts-1851703_640.jpg",
+  crackers: "https://cdn.pixabay.com/photo/2017/05/31/12/17/crackers-2362072_640.jpg",
+  "potato chips": "https://cdn.pixabay.com/photo/2014/07/06/16/30/chips-385301_640.jpg",
+  chalk: "https://cdn.pixabay.com/photo/2017/09/04/08/48/chalk-2714990_640.jpg",
+  paint: "https://cdn.pixabay.com/photo/2016/11/29/05/08/paint-1869856_640.jpg",
+  tape: "https://cdn.pixabay.com/photo/2015/09/05/21/51/adhesive-tape-925430_640.jpg",
+  scissors: "https://cdn.pixabay.com/photo/2016/01/07/23/18/scissors-1126805_640.jpg",
+  glue: "https://cdn.pixabay.com/photo/2016/04/01/11/23/glue-1301880_640.png",
+  paper: "https://cdn.pixabay.com/photo/2017/08/10/03/37/paper-2610631_640.jpg",
+  ribbon: "https://cdn.pixabay.com/photo/2016/11/29/03/54/ribbon-1869795_640.jpg",
+  string: "https://cdn.pixabay.com/photo/2016/12/27/17/01/string-1935765_640.jpg",
+  magnets: "https://cdn.pixabay.com/photo/2017/03/27/14/08/magnet-2174751_640.jpg",
+  calculators: "https://cdn.pixabay.com/photo/2014/07/06/13/55/calculator-385506_1280.jpg",
+  "colored pencils": "https://cdn.pixabay.com/photo/2016/06/29/08/50/pencils-1486278_640.jpg",
+  "rubber bands": "https://cdn.pixabay.com/photo/2016/12/06/18/27/rubber-bands-1888888_640.jpg",
+  "push pins": "https://cdn.pixabay.com/photo/2016/09/20/20/19/push-pin-1684181_640.jpg",
+  "paint brushes": "https://cdn.pixabay.com/photo/2016/11/29/12/54/paint-brushes-1868992_640.jpg",
+  staplers: "https://cdn.pixabay.com/photo/2016/03/05/20/01/stapler-1238997_640.jpg"
 };
 
-/* ===== Audio + Speech ===== */
-const AudioKit = (()=>{
-  let ctx; try{ ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(_){ ctx=null; }
-  function resume(){ if(ctx && ctx.state==='suspended'){ ctx.resume(); } }
-  function tone(f=880,d=0.12,type='sine',g=0.35){
-    if(!ctx) return; resume();
-    const o=ctx.createOscillator(); const a=ctx.createGain();
-    o.type=type; o.frequency.value=f; o.connect(a); a.connect(ctx.destination);
-    const t=ctx.currentTime; a.gain.setValueAtTime(0.0001,t); a.gain.exponentialRampToValueAtTime(g,t+0.01); a.gain.exponentialRampToValueAtTime(0.0001,t+d);
-    o.start(); o.stop(t+d);
-  }
-  const success=()=>{ tone(1100,0.09); setTimeout(()=>tone(1400,0.1),80); setTimeout(()=>tone(1650,0.12),160); };
-  const fail=()=>{ tone(330,0.12); setTimeout(()=>tone(250,0.14),120); };
-  const tick=()=>tone(900,0.06,'triangle',0.25);
-  function speak(text){
-    try{ const u=new SpeechSynthesisUtterance(String(text)); u.lang='en-US'; u.rate=0.98; u.pitch=1; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(_){}
-  }
-  function speakCountdown(n){
-    try{ const u=new SpeechSynthesisUtterance(String(n)); u.lang='en-US'; u.rate=1; u.pitch=1; speechSynthesis.cancel(); speechSynthesis.speak(u); }
-    catch(_){ tick(); }
-  }
-  return {success,fail,tick,speak,speakCountdown,resume};
-})();
+/* ====== Helpers ====== */
+function $(sel){return document.querySelector(sel)}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function cap(s){return s[0].toUpperCase()+s.slice(1)}
+function twodec(x){return (Math.round(x*100)/100).toFixed(2)}
+function nowISO(){ return new Date().toISOString(); }
 
-/* ===== Helpers ===== */
-const el = id=>document.getElementById(id);
-const pick = a => a[Math.floor(Math.random()*a.length)];
-const shuffle = a => { for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
-const doesSet = new Set(['he','she','it','tom','jack','leo','ryan','eric','ben','john','mark','mary','anna','lisa','amy','jane','kate','lily','mia']);
-const maleNames = ["Tom","Jack","Leo","Ryan","Eric","Ben","John","Mark"];
-const femaleNames = ["Mary","Anna","Lisa","Amy","Jane","Kate","Lily","Mia"];
-const haveHas = s => (['He','She','It'].includes(s) ? 'has' : 'have');
-const sec = x=> Number(x).toFixed(1);
-const toast = m=> el('toast').textContent = m;
-const ENCOURAGE = ["Great!","Awesome!","Excellent!","Fantastic!","Well done!","Nice job!","Super!","You got it!"];
-const FAIL_WORDS = ["OOPS!","TRY AGAIN!","ALMOST!","NOT YET!","WHOOPS!","ONE MORE TIME!","KEEP GOING!","DON'T GIVE UP!"];
+/* ====== Subjects ====== */
+const baseSubjects = [
+  {q:"I",   ans:"I",   auxQ:"do",   auxAff:"do",   auxNeg:"don't"},
+  {q:"you", ans:"you", auxQ:"do",   auxAff:"do",   auxNeg:"don't"},
+  {q:"we",  ans:"we",  auxQ:"do",   auxAff:"do",   auxNeg:"don't"},
+  {q:"they",ans:"they",auxQ:"do",   auxAff:"do",   auxNeg:"don't"},
+  {q:"he",  ans:"he",  auxQ:"does", auxAff:"does", auxNeg:"doesn't"},
+  {q:"she", ans:"she", auxQ:"does", auxAff:"does", auxNeg:"doesn't"}
+];
 
-/* ===== Inline SVG for fail pics ===== */
-function svgDataURL(svg){ return "data:image/svg+xml;utf8," + encodeURIComponent(svg); }
-const IMG = {
-  cry: svgDataURL(`<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'>
-    <circle cx='32' cy='32' r='30' fill='#fde68a' stroke='#f59e0b' stroke-width='2'/>
-    <circle cx='24' cy='26' r='5' fill='#fff'/><circle cx='40' cy='26' r='5' fill='#fff'/>
-    <circle cx='24' cy='26' r='2' fill='#1f2937'/><circle cx='40' cy='26' r='2' fill='#1f2937'/>
-    <path d='M20 42 Q32 50 44 42' stroke='#1f2937' stroke-width='3' fill='none'/>
-    <path d='M18 34 q4 8 0 12' stroke='#3b82f6' stroke-width='4' fill='none'/>
-    <path d='M46 34 q4 8 0 12' stroke='#3b82f6' stroke-width='4' fill='none'/>
-  </svg>`),
-  thunder: svgDataURL(`<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'>
-    <rect width='64' height='64' rx='12' fill='#e2e8f0'/>
-    <ellipse cx='24' cy='26' rx='14' ry='9' fill='#94a3b8'/>
-    <ellipse cx='40' cy='28' rx='14' ry='10' fill='#94a3b8'/>
-    <path d='M30 40 L38 40 L30 56 L36 56 L28 64 L32 52 L26 52 Z' fill='#facc15' stroke='#eab308' stroke-width='1.5'/>
-  </svg>`),
-  sweat: svgDataURL(`<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'>
-    <circle cx='32' cy='32' r='30' fill='#bfdbfe' stroke='#60a5fa' stroke-width='2'/>
-    <circle cx='24' cy='26' r='4' fill='#1f2937'/><circle cx='40' cy='26' r='4' fill='#1f2937'/>
-    <path d='M22 42 Q32 36 42 42' stroke='#1f2937' stroke-width='3' fill='none'/>
-    <path d='M50 10 C56 16 56 20 50 24 C44 20 44 16 50 10 Z' fill='#38bdf8'/>
-  </svg>`)
-};
-
-/* ===== State ===== */
-const st = { cls:'', name:'', score:0, streak:0, attempts:0, current:null, timer:0, left:8.0, logs: [] };
-function hud(){ el('who').textContent=st.name||'—'; el('whoClass').textContent=st.cls||'—'; el('score').textContent=st.score; el('streak').textContent=st.streak; }
-
-/* ===== Mapping ===== */
-function mappedPronoun(subject){
-  const s = String(subject).toLowerCase();
-  if(s==='you') return ['I','We'];
-  if(s==='we') return ['We','You'];
-  if(s==='i') return ['You'];
-  if(['he','she','it','they'].includes(s)) return [s[0].toUpperCase()+s.slice(1)];
-  if(maleNames.map(x=>x.toLowerCase()).includes(s)) return ['He'];
-  if(femaleNames.map(x=>x.toLowerCase()).includes(s)) return ['She'];
-  return [subject[0].toUpperCase()+subject.slice(1)];
+/* ====== UI bits ====== */
+function fallbackIcon(label){
+  return `<div class="imgwrap"><div style="font-size:22px;color:#6b7280;border:1px dashed #cbd5e1;border-radius:10px;padding:10px 14px;background:#fff">${label}</div></div>`;
 }
-
-/* ===== Templates (strict fill-in) ===== */
-function T_subjectBlank(){
-  const subjPool = ['he','she','it', ...maleNames, ...femaleNames];
-  const picked = pick(subjPool);
-  const pron = mappedPronoun(picked)[0];
-  const cand = ['I','you','we','he','she','it','they'];
-  const correct = pron.toLowerCase();
-  const distract = shuffle(cand.filter(x=>x.toLowerCase()!==correct)).slice(0,3);
-  const opts = shuffle([correct, ...distract]);
-  return { type:'T1',
-    q: `What does <span class="blank">_____</span> have? <b>${pron} has some chalk.</b>`,
-    opts, correct: [correct]
-  };
-}
-function T_someAny(){
-  return { type:'T2',
-    q: `What do you have? I have <span class="blank">_____</span> chalk.`,
-    opts: ['some','any'],
-    correct: ['some']
-  };
-}
-function T_haveHas(){
-  const subs = ['she','he','it','they','we','you','I', ...maleNames, ...femaleNames];
-  const subj = pick(subs);
-  const aux = doesSet.has(String(subj).toLowerCase()) ? 'does' : 'do';
-  const pron = mappedPronoun(subj)[0];
-  const correctForm = haveHas(pron);
-  return { type:'T3',
-    q: `What ${aux} ${subj} have? ${pron} <span class="blank">_____</span> some tape.`,
-    opts: ['have','has'],
-    correct: [correctForm]
-  };
-}
-function T_comprehensive(){
-  const pool = ['I','you','we','they','he','she','it', ...maleNames, ...femaleNames];
-  const s = pick(pool);
-  const auxCorrect = doesSet.has(String(s).toLowerCase()) ? 'does' : 'do';
-  const pron = mappedPronoun(s)[0];
-  const verbCorrect = haveHas(pron);
-  const detCorrect = 'some';
-  const blankType = pick(['aux','subject','det','verb']);
-  if(blankType==='aux'){
-    return { type:'T4-AUX',
-      q: `What <span class="blank">_____</span> ${s} have? ${pron} ${verbCorrect} ${detCorrect} chalk.`,
-      opts: ['do','does','did','is'],
-      correct: [auxCorrect]
-    };
-  }
-  if(blankType==='subject'){
-    const cand = ['I','you','we','he','she','it','they'];
-    const correct = String(s).toLowerCase();
-    const corrPron = ['tom','jack','leo','ryan','eric','ben','john','mark'].includes(correct) ? 'he'
-                    : ['mary','anna','lisa','amy','jane','kate','lily','mia'].includes(correct) ? 'she'
-                    : correct;
-    const distract = shuffle(cand.filter(x=>x.toLowerCase()!==corrPron)).slice(0,3);
-    const opts = shuffle([corrPron, ...distract]);
-    return { type:'T4-SUBJ',
-      q: `What ${auxCorrect} <span class="blank">_____</span> have? ${pron} ${verbCorrect} ${detCorrect} chalk.`,
-      opts, correct: [corrPron]
-    };
-  }
-  if(blankType==='det'){
-    return { type:'T4-DET',
-      q: `What ${auxCorrect} ${s} have? ${pron} ${verbCorrect} <span class="blank">_____</span> chalk.`,
-    opts: ['some','any','a','an'],
-      correct: ['some']
-    };
-  }
-  return { type:'T4-VRB',
-    q: `What ${auxCorrect} ${s} have? ${pron} <span class="blank">_____</span> ${detCorrect} chalk.`,
-    opts: ['have','has','had','is'],
-    correct: [verbCorrect]
-  };
-}
-function makeQ(){
-  const mode = el('mode').value;
-  if(mode==='subjectOnly') return T_subjectBlank();
-  if(mode==='someAnyOnly') return T_someAny();
-  if(mode==='haveHasOnly') return T_haveHas();
-  if(mode==='comprehensiveOnly') return T_comprehensive();
-  return [T_subjectBlank, T_someAny, T_haveHas, T_comprehensive][Math.floor(Math.random()*4)]();
-}
-
-/* ===== Timer (8s, last 3s voice+beep) ===== */
-function startTimer(){
-  cancelAnimationFrame(st.timer);
-  const t0 = performance.now(); const warn={3:false,2:false,1:false};
-  const step = now=>{
-    const left = Math.max(0, 8 - (now - t0)/1000); st.left=left;
-    el('count').textContent = sec(left)+'s'; el('bar').style.width = (left/8*100).toFixed(1)+'%';
-    const s = Math.ceil(left); if(s<=3 && !warn[s]){ warn[s]=true; AudioKit.tick(); AudioKit.speakCountdown(s); }
-    if(left<=0) return timeUp();
-    st.timer = requestAnimationFrame(step);
-  };
-  el('bar').style.width='100%';
-  st.timer = requestAnimationFrame(step);
-}
-function stopTimer(){ cancelAnimationFrame(st.timer); }
-
-/* ===== FX engines ===== */
-function svgDataURL(svg){ return "data:image/svg+xml;utf8," + encodeURIComponent(svg); }
-function fxConfetti(cvs){
-  const ctx = cvs.getContext('2d'); const W=cvs.width=cvs.offsetWidth; const H=cvs.height=cvs.offsetHeight;
-  const parts = Array.from({length: 120}, ()=>({ x: W/2, y: H/2, vx: (Math.random()*2-1)*5, vy: (Math.random()*2-1)*5 - 2,
-                                               g: 0.08+Math.random()*0.05, life: 70+Math.random()*20, hue: Math.random()*360 }));
-  let frame=0; (function anim(){ ctx.clearRect(0,0,W,H);
-    parts.forEach(p=>{ p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.life--; ctx.fillStyle=`hsl(${p.hue},90%,60%)`; ctx.fillRect(p.x,p.y,4,8); });
-    if(++frame<80) requestAnimationFrame(anim); else ctx.clearRect(0,0,W,H);
-  })();
-}
-function fxStars(cvs){
-  const ctx = cvs.getContext('2d'); const W=cvs.width=cvs.offsetWidth; const H=cvs.height=cvs.offsetHeight;
-  const stars = Array.from({length:80}, ()=>({ x: Math.random()*W, y: Math.random()*H, r: 1+Math.random()*2 }));
-  let frame=0; (function anim(){ ctx.clearRect(0,0,W,H);
-    stars.forEach(s=>{ ctx.globalAlpha = 0.5+0.5*Math.sin((frame/10)+s.x/50); ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle='#fbbf24'; ctx.fill(); });
-    ctx.globalAlpha=1; if(++frame<80) requestAnimationFrame(anim); else ctx.clearRect(0,0,W,H);
-  })();
-}
-function fxBalloons(cvs){
-  const ctx = cvs.getContext('2d'); const W=cvs.width=cvs.offsetWidth; const H=cvs.height=cvs.offsetHeight;
-  const balloons = Array.from({length:20}, ()=>({ x: Math.random()*W, y: H+20+Math.random()*60, vy: -1.5 - Math.random()*1.2, hue: Math.random()*360 }));
-  let frame=0; (function anim(){ ctx.clearRect(0,0,W,H);
-    balloons.forEach(b=>{ b.y+=b.vy; ctx.fillStyle = `hsl(${b.hue},90%,60%)`; ctx.beginPath(); ctx.ellipse(b.x,b.y,10,14,0,0,Math.PI*2); ctx.fill(); });
-    if(++frame<120) requestAnimationFrame(anim); else ctx.clearRect(0,0,W,H);
-  })();
-}
-function fxTears(cvs){
-  const ctx = cvs.getContext('2d'); const W=cvs.width=cvs.offsetWidth; const H=cvs.height=cvs.offsetHeight;
-  const drops = Array.from({length: 90}, ()=>({ x: Math.random()*W, y: -10-Math.random()*50, vy: 2+Math.random()*3 }));
-  let frame=0; (function anim(){ ctx.clearRect(0,0,W,H);
-    drops.forEach(d=>{ d.y+=d.vy; if(d.y>H) d.y=-10; ctx.fillStyle='rgba(59,130,246,.9)'; ctx.fillRect(d.x,d.y,3,8); });
-    if(++frame<70) requestAnimationFrame(anim); else ctx.clearRect(0,0,W,H);
-  })();
-}
-function fxThunder(cvs){
-  const ctx = cvs.getContext('2d'); const W=cvs.width=cvs.offsetWidth; const H=cvs.height=cvs.offsetHeight;
-  let frame=0; (function anim(){ ctx.clearRect(0,0,W,H);
-    if(frame%15<3){ ctx.fillStyle='rgba(0,0,0,0.15)'; ctx.fillRect(0,0,W,H); ctx.strokeStyle='#fde047'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(W*0.4,0); ctx.lineTo(W*0.45,H*0.4); ctx.lineTo(W*0.35,H*0.4); ctx.lineTo(W*0.5,H); ctx.stroke(); }
-    if(++frame<60) requestAnimationFrame(anim); else ctx.clearRect(0,0,W,H);
-  })();
-}
-function fxSweat(cvs){
-  const ctx = cvs.getContext('2d'); const W=cvs.width=cvs.offsetWidth; const H=cvs.height=cvs.offsetHeight;
-  const drops = Array.from({length: 40}, ()=>({ x: W*0.55 + Math.random()*40, y: H*0.2 + Math.random()*20, vy: 1+Math.random()*1.5 }));
-  let frame=0; (function anim(){ ctx.clearRect(0,0,W,H);
-    drops.forEach(d=>{ d.y+=d.vy; ctx.fillStyle='rgba(14,165,233,.9)'; ctx.beginPath(); ctx.arc(d.x,d.y,3,0,Math.PI*2); ctx.fill(); });
-    if(++frame<60) requestAnimationFrame(anim); else ctx.clearRect(0,0,W,H);
-  })();
-}
-
-/* ===== FX dispatcher ===== */
-function playSuccessFX(){
-  const emoji = el('emojiHappy'); const word = el('wordHappy');
-  const cvs = [el('fx1'),el('fx2'),el('fx3')];
-  emoji.classList.add('show'); word.classList.add('show');
-  pick([fxConfetti, fxStars, fxBalloons])(pick(cvs));
-  setTimeout(()=>{ emoji.classList.remove('show'); word.classList.remove('show'); }, 1400);
-}
-function playFailFX(){
-  el('playPanel').classList.add('shake'); setTimeout(()=>el('playPanel').classList.remove('shake'), 300);
-  const emoji = el('emojiSad'); const word = el('wordSad'); const pic = el('failPic');
-  const cvs = [el('fx4'),el('fx5'),el('fx6')];
-  emoji.classList.add('show'); word.classList.add('show');
-  const choice = Math.floor(Math.random()*3);
-  if(choice===0){ pic.src = IMG.cry; fxTears(cvs[0]); }
-  else if(choice===1){ pic.src = IMG.thunder; fxThunder(cvs[1]); }
-  else { pic.src = IMG.sweat; fxSweat(cvs[2]); }
-  setTimeout(()=>{ emoji.classList.remove('show'); word.classList.remove('show'); pic.src=''; }, 1200);
-}
-
-/* ===== Render & Choose ===== */
-function renderQ(){
-  el('question').innerHTML = st.current.q;
-  const box = el('options'); box.innerHTML='';
-  st.current.opts.forEach(t=>{
-    const b=document.createElement('button'); b.className='opt'; b.textContent=t;
-    b.onclick=()=>choose(b,t);
-    box.appendChild(b);
-  });
-  toast('');
-}
-function lockOptions(lock=true){ [...document.querySelectorAll('.opt')].forEach(b=>b.disabled=lock); }
-
-function choose(btn, text){
-  AudioKit.resume?.();
-  if(!st.current) return;
-  stopTimer();
-  lockOptions(true);
-  const ok = new Set(st.current.correct.map(x=>String(x).toLowerCase())).has(String(text).toLowerCase());
-  st.attempts++;
-  if(ok){
-    st.score+=10; st.streak++; btn.classList.add('correct'); AudioKit.success();
-    const phrase = pick(ENCOURAGE); el('wordHappy').textContent = phrase.toUpperCase();
-    AudioKit.speak(phrase); toast(phrase.toUpperCase()); playSuccessFX();
+function renderPicFor(item){
+  const mode = $("#picMode").value;
+  const holder = $("#pic");
+  holder.innerHTML = `<div class="imgwrap"><span class="muted" style="font-size:12px">Loading...</span></div>`;
+  if(mode==="images" && IMAGES[item]){
+    const src = IMAGES[item];
+    holder.innerHTML = `
+      <div class="imgwrap">
+        <img alt="${item}" src="${src}"
+             referrerpolicy="no-referrer" loading="eager"
+             onerror="this.onerror=null; this.remove(); this.parentElement.innerHTML=\`${fallbackIcon(item)}\`">
+      </div>`;
   }else{
-    st.streak=0; btn.classList.add('wrong'); AudioKit.fail();
-    const failPhrase = pick(FAIL_WORDS); el('wordSad').textContent = failPhrase;
-    AudioKit.speak(failPhrase.replace("!", "")); toast(failPhrase); playFailFX();
+    holder.innerHTML = fallbackIcon(item);
   }
-  const log = { ts:new Date().toISOString(), cls:st.cls, name:st.name, q:el('question')?.innerText||'', chosen:text, ok: ok?1:0, left: sec(st.left), score:st.score, streak:st.streak };
-  st.logs.push(log);
-  saveLocal();
-  refreshLB();
-  upload(log);
-  toast((ok? '✅ Correct! ' : '✗ ') + 'Press "New Question" for the next one.');
-}
-function timeUp(){
-  lockOptions(true);
-  toast('⏰ Time up! Press "New Question" for the next one.');
-  const log = { ts:new Date().toISOString(), cls:st.cls, name:st.name, q:'(timeout) '+(el('question')?.innerText||''), chosen:'(timeout)', ok:0, left:'0.0', score:st.score, streak:st.streak };
-  st.logs.push(log);
-  saveLocal();
-  refreshLB();
-  upload(log);
 }
 
-/* ===== Upload (no-cors) ===== */
-async function upload(log){
-  if(!st.name) return;
-  const payload = {
-    mode:'log', timestamp:log.ts, class: log.cls, name: log.name,
-    deviceId: (localStorage.getItem('eslDeviceId')||''), sessionId: 's-'+Date.now(),
-    question: log.q, chosen: log.chosen, correct: log.ok, timeLeft: log.left, score: log.score, streak: log.streak
-  };
-  try{
-    await fetch(CONFIG.scriptUrl, {
-      method:'POST', mode:'no-cors',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
-  }catch(e){ /* silent */ }
+/* ====== State ====== */
+let score=0, attempts=0, round=0, streak=0;
+let current=null, answered=false;
+let timerId=null, timeLeft=COUNTDOWN_SECONDS, questionStart=0;
+let currentPlayer=null;
+
+let sessionRecords=[];
+let store = { allRecords:[], allStats:{} };
+let currentPlayerStreak = 0;
+
+/* ====== Local Storage ====== */
+const KEY = "esl2_portable_store_v20pics";
+function loadLocal(){ try{ const v=JSON.parse(localStorage.getItem(KEY)||"{}"); if(v&&v.allRecords&&v.allStats) store=v; }catch{} }
+function saveLocal(){ localStorage.setItem(KEY, JSON.stringify(store)); }
+
+/* ====== Audio / TTS ====== */
+let audioCtx=null;
+function ensureAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }
+function beep(freq=600, dur=0.15, type='sine', vol=0.3){
+  try{ ensureAudio();
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type=type; o.frequency.value=freq; g.gain.value=vol;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); setTimeout(()=>{ g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.05); o.stop(audioCtx.currentTime+0.06); }, dur*1000);
+  }catch(e){}
+}
+function speak(text){
+  if(!('speechSynthesis' in window)) return false;
+  const u = new SpeechSynthesisUtterance(text);
+  const voices = speechSynthesis.getVoices(); const pref = voices.find(v=>/en/i.test(v.lang)) || null;
+  if (pref) u.voice = pref; u.rate=1; u.pitch=1; u.volume=1;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+  return true;
+}
+function sfxCorrect(){ if(!speak(pick(PRAISE))) beep(880); }
+function sfxWrong(){ if(!speak(pick(NEG_FEEDBACK))) beep(200,0.3,'square'); }
+
+/* ====== Timer ====== */
+function speakCountdown(n){ const words={3:"Three",2:"Two",1:"One"}; if(words[n]){ speak(words[n]); beep(700,0.2); } }
+function resetTimer(){ clearInterval(timerId); timerId=null; timeLeft=COUNTDOWN_SECONDS; $("#timeLeft").textContent=timeLeft; $("#timeBar").style.width="100%"; }
+function startTimer(){
+  resetTimer(); questionStart=performance.now();
+  timerId=setInterval(()=>{
+    timeLeft--; $("#timeLeft").textContent=timeLeft; $("#timeBar").style.width=(timeLeft/COUNTDOWN_SECONDS*100)+"%";
+    if([3,2,1].includes(timeLeft)) speakCountdown(timeLeft);
+    if(timeLeft<=0){ clearInterval(timerId); timerId=null; speak("Time's up!"); beep(200,0.35,'square'); timesUp(); }
+  },1000);
+}
+function stopTimer(){ clearInterval(timerId); timerId=null; }
+
+/* ====== HUD ====== */
+function updateHUD(){
+  $("#score").textContent="Score: "+score;
+  $("#attempts").textContent="Attempts: "+attempts;
+  $("#accuracy").textContent="Accuracy: "+(attempts?Math.round(score/attempts*100):0)+"%";
+  $("#currentPlayer").textContent=currentPlayer?currentPlayer:"—";
+  $("#currentPlayer").classList.toggle("muted", !currentPlayer);
+  $("#btnNew").disabled = !currentPlayer;
+  $("#btnNewBelow").disabled = !currentPlayer;
+  $("#streakPill").textContent = "Streak: " + streak;
 }
 
-/* ===== Controls ===== */
-function ensurePlayer(){
-  const c = el('classInput')?.value.trim()||'', n = el('nameInput')?.value.trim()||'';
-  if(!c || !n){ el('status').textContent='⚠️ 請輸入「班級 + 姓名」'; return false; }
-  if(!st.name){ st.cls=c; st.name=n; st.score=0; st.streak=0; el('status').textContent='✅ Player set: '+st.cls+'-'+st.name; }
-  hud(); return true;
-}
-function newQ(){ st.current = makeQ(); renderQ(); startTimer(); }
+/* ====== Question generation ====== */
+function newQ(){
+  if(!currentPlayer){ $("#feedback").textContent="Please set a player name first."; $("#feedback").className="feedback bad"; return; }
+  round++; stopTimer();
+  let m=$("#mode").value; if(m==="mix"){ m=["Q","AUX","SUBJ","YN"][Math.floor(Math.random()*4)]; }
+  const subj=pick(baseSubjects);
+  const item = pick(items);
+  const truthYes=Math.random()<0.5;
 
-document.addEventListener('keydown', e=>{ if(e.key==='Enter') el('newQ').click(); });
-el('setPlayer').onclick=()=>{ if(ensurePlayer()){ AudioKit.resume(); } };
-el('newQ').onclick=()=>{ if(!ensurePlayer()) return; AudioKit.resume(); newQ(); };
-el('nextBtn')?.addEventListener('click', ()=> el('newQ').click());
-el('reveal').onclick=()=>{ if(!st.current) return; toast('Answer: '+(st.current.correct||[]).join(' / ')); };
-el('reset').onclick=()=>{ st.score=0; st.streak=0; st.attempts=0; hud(); toast('Reset'); };
+  if(m==="Q"){
+    const prompt=`____ ${subj.q} have any ${item}?`;
+    const correct=(subj.auxQ==="do"?"Do":"Does");
+    current={mode:"Do/Does", full:prompt, correctSet:new Set([correct]), item};
+    $("#hint").textContent="Choose: Do or Does";
+    $("#question").textContent=prompt; renderPicFor(item);
+    renderChoices(["Do","Does"], current.correctSet);
 
-/* ===== Persistence ===== */
-function saveLocal(){ localStorage.setItem('eslLogs', JSON.stringify(st.logs)); }
-function loadLocal(){ try{ st.logs = JSON.parse(localStorage.getItem('eslLogs')||'[]'); }catch(_){ st.logs=[]; } }
-loadLocal();
+  }else if(m==="AUX"){
+    const q = `${cap(subj.auxQ)} ${subj.q} have any ${item}?`;
+    const ansSubj = (subj.q==="I") ? "you" : (subj.q==="you" ? "I" : subj.ans);
+    const needed = truthYes ? subj.auxAff : subj.auxNeg;
+    const short = `${truthYes ? "Yes" : "No"}, ${ansSubj} ___.`;
+    const prompt = q + "  " + short;
+    current={mode:"Aux", full:prompt, correctSet:new Set([needed]), item};
+    $("#hint").textContent="Choose: do / don't / does / doesn't";
+    $("#question").textContent=prompt; renderPicFor(item);
+    renderChoices(["do","does","don't","doesn't"], current.correctSet);
 
-/* ===== Leaderboard ===== */
-function aggregateLogs(){
-  const map = new Map();
-  for(const r of st.logs){
-    if(!r.name||!r.cls) continue;
-    const key = r.cls+'|'+r.name;
-    if(!map.has(key)) map.set(key, {cls:r.cls, name:r.name, score:0, streak:0, attempts:0});
-    const obj = map.get(key);
-    obj.score = Math.max(obj.score, r.score);
-    obj.streak = Math.max(obj.streak, r.streak);
-    obj.attempts += 1;
+  }else if(m==="SUBJ"){
+    const q = `${cap(subj.auxQ)} ${subj.q} have any ${item}?`;
+    const auxWord=(subj.auxQ==="do")?"do":"does";
+    const short=`Yes, ___ ${auxWord}.`;
+    const prompt=q+"  "+short;
+
+    let correctSet;
+    if(subj.q==="you"){ correctSet=new Set(["I","we"]);
+    }else if(subj.q==="we"){ correctSet=new Set(["we","you"]);
+    }else if(subj.q==="I"){ correctSet=new Set(["you"]);
+    }else{ correctSet=new Set([subj.ans]); }
+
+    const options=["I","you","we","they","he","she"];
+    for(let i=options.length-1;i>0;i--){const j=Math.random()*(i+1)|0; [options[i],options[j]]=[options[j],options[i]];}
+
+    current={mode:"Answer Subject", full:prompt, correctSet, item};
+    $("#hint").textContent="Choose the correct subject";
+    $("#question").textContent=prompt; renderPicFor(item);
+    renderChoices(options, correctSet);
+
+  }else{ // YN
+    const q = `${cap(subj.auxQ)} ${subj.q} have any ${item}?`;
+    const ansSubj = (subj.q==="I") ? "you" : (subj.q==="you" ? "I" : subj.ans);
+    const showNeg=Math.random()<0.5;
+    const auxShown=showNeg?subj.auxNeg:subj.auxAff;
+    const short=`___, ${ansSubj} ${auxShown}.`;
+    const prompt=q+"  "+short;
+    const correct=showNeg?"No":"Yes";
+    current={mode:"Yes/No", full:prompt, correctSet:new Set([correct]), item};
+    $("#hint").textContent="Choose: Yes or No";
+    $("#question").textContent=prompt; renderPicFor(item);
+    renderChoices(["Yes","No"], current.correctSet);
   }
-  return Array.from(map.values());
+
+  document.getElementById('quizCard').scrollIntoView({behavior:'smooth', block:'start'});
 }
-function refreshLB(){
-  const clsFilter = el('lbFilterClass').value.trim().toLowerCase();
-  const nameFilter = el('lbFilterName').value.trim().toLowerCase();
-  const rows = aggregateLogs()
-    .filter(r => (!clsFilter || r.cls.toLowerCase().includes(clsFilter)) && (!nameFilter || r.name.toLowerCase().includes(nameFilter)))
-    .sort((a,b)=> b.score-a.score || b.streak-a.streak || b.attempts-a.attempts);
-  const tb = document.querySelector('#lbTable tbody'); tb.innerHTML='';
-  rows.forEach((r,i)=>{
-    const tr = document.createElement('tr');
-    if(st.name===r.name && st.cls===r.cls) tr.classList.add('highlight');
-    tr.innerHTML = `<td>${i+1}</td><td>${r.cls}</td><td>${r.name}</td><td>${r.score}</td><td>${r.streak}</td><td>${r.attempts}</td>`;
-    tb.appendChild(tr);
+
+function renderChoices(options, correctSet){
+  const box=$("#choices"); box.innerHTML="";
+  options.forEach(opt=>{ const b=document.createElement("button"); b.textContent=opt; b.onclick=()=>check(opt, correctSet, b); box.appendChild(b); });
+  $("#feedback").textContent=""; $("#feedback").className="feedback";
+  answered=false; startTimer();
+}
+
+/* ====== 判分 / 紀錄 ====== */
+function finishQuestion(val, correctSet, btn){
+  document.querySelectorAll(".choices button").forEach(b=>{
+    b.disabled=true;
+    if(correctSet.has(b.textContent)) b.classList.add("correct");
+    if(btn && b===btn && !correctSet.has(val)) b.classList.add("wrong");
   });
 }
-el('lbRefresh').onclick=refreshLB;
-el('lbFilterClass').addEventListener('input', refreshLB);
-el('lbFilterName').addEventListener('input', refreshLB);
-refreshLB();
+function pushRecord(ok, answer, correctSet){
+  const elapsedMs = Math.max(0, performance.now()-questionStart);
+  const rec = {round, player: currentPlayer||"(No name)", mode: current.mode, prompt: current.full,
+               answer, correctShown: Array.from(correctSet).join(" / "), ok, timeSec: elapsedMs/1000, ts: nowISO()};
 
-/* ===== Admin actions ===== */
-const PIN_OK = ()=> prompt('Enter PIN') === CONFIG.pin;
-el('btnShowRaw').onclick=()=>{
-  const pre = el('raw');
-  pre.style.display = pre.style.display==='none' ? 'block' : 'none';
-  pre.textContent = JSON.stringify(st.logs, null, 2);
+  // 本次
+  sessionRecords.push(rec);
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td>${rec.round}</td><td>${rec.player}</td><td>${rec.mode}</td><td>${rec.prompt}</td><td>${rec.answer}</td><td>${rec.correctShown}</td><td>${ok?"✓":"✗"}</td><td>${twodec(rec.timeSec)}</td>`;
+  $("#log").prepend(tr);
+
+  // 累積
+  store.allRecords.push(rec);
+  if(!store.allStats[rec.player]) store.allStats[rec.player]={attempts:0, correct:0, totalMs:0, bestStreak:0};
+  const S = store.allStats[rec.player];
+  S.attempts++; if(ok){ S.correct++; currentPlayerStreak++; if(currentPlayerStreak>S.bestStreak) S.bestStreak=currentPlayerStreak; } else { currentPlayerStreak=0; }
+  S.totalMs += elapsedMs;
+
+  saveLocal();
+  renderBoard(); renderAllHistoryTable();
+}
+function check(val, correctSet, btn){
+  if(answered) return;
+  answered=true; stopTimer(); finishQuestion(val, correctSet, btn);
+  attempts++; const ok=correctSet.has(val);
+  if(ok){ score++; streak++; sfxCorrect(); confettiBurst(streak>=3?2.2:1); }
+  else { streak=0; sfxWrong(); }
+  $("#feedback").textContent = ok ? (streak>=3 ? "Combo! Great! ✓" : "Great! ✓") : "Oops! ✗  Correct: "+Array.from(correctSet).join(" / ");
+  $("#feedback").className = ok ? "feedback ok" : "feedback bad";
+  updateHUD(); pushRecord(ok, val, correctSet);
+}
+function timesUp(){
+  if(answered||!current) return;
+  answered=true; finishQuestion("(timeout)", current.correctSet, null);
+  attempts++; streak=0;
+  $("#feedback").textContent="⏰ Time's up! Correct: "+Array.from(current.correctSet).join(" / ");
+  $("#feedback").className="feedback bad";
+  updateHUD(); pushRecord(false, "— (timeout)", current.correctSet); sfxWrong();
+}
+
+/* ====== 揭曉 / 玩家 / 重置 ====== */
+function reveal(){
+  if(!current) return; stopTimer(); answered=true;
+  const correctShown=Array.from(current.correctSet).join(" / ");
+  $("#feedback").textContent="Answer: "+correctShown;
+  $("#feedback").className="feedback ok";
+  document.querySelectorAll(".choices button").forEach(b=>{ if(current.correctSet.has(b.textContent)) b.classList.add("correct"); b.disabled=true; });
+}
+function setPlayer(){
+  const name = ($("#playerName").value||"").trim();
+  if(!name){ alert("Please enter a player name."); return; }
+  currentPlayer=name;
+  if(!store.allStats[name]) store.allStats[name]={attempts:0, correct:0, totalMs:0, bestStreak:0};
+  $("#feedback").textContent=`Ready, ${name}! Click “New Question”.`; $("#feedback").className="feedback ok";
+  currentPlayerStreak = 0;
+  updateHUD(); renderBoard(); saveLocal();
+}
+function resetAll(){
+  stopTimer(); score=0; attempts=0; round=0; current=null; answered=false; currentPlayer=null; streak=0; currentPlayerStreak=0;
+  $("#hint").textContent="Enter player name, set player, then click “New Question”.";
+  $("#question").textContent="—"; $("#pic").innerHTML='<span class="muted">Picture will appear here.</span>';
+  $("#choices").innerHTML=""; $("#feedback").textContent="";
+  $("#mode").value="mix";
+  updateHUD(); resetTimer();
+}
+
+/* ====== 排行 / 歷史 ====== */
+function renderBoard(){
+  const rows = Object.entries(store.allStats).map(([name, s])=>{
+    const totalSec = s.totalMs/1000;
+    const avg = s.attempts ? totalSec / s.attempts : 0;
+    const acc = s.attempts ? (s.correct / s.attempts * 100) : 0;
+    return {name, attempts:s.attempts, correct:s.correct, totalSec, avg, bestStreak:s.bestStreak||0, acc};
+  })
+  .sort((a,b)=> (b.correct-a.correct) || (b.bestStreak-a.bestStreak) || (a.avg-b.avg) || a.name.localeCompare(b.name));
+
+  const tbody=$("#board"); tbody.innerHTML="";
+  rows.forEach((r,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${i+1}</td><td>${r.name}</td><td>${r.attempts}</td><td>${r.correct}</td><td>${r.totalSec.toFixed(2)}</td><td>${r.avg.toFixed(2)}</td><td>${r.bestStreak}</td><td>${Math.round(r.acc)}%</td>`;
+    tbody.appendChild(tr);
+  });
+
+  const byCorrect = rows.slice().sort((a,b)=> (b.correct-a.correct) || (a.avg-b.avg))[0];
+  const byStreak  = rows.slice().sort((a,b)=> (b.bestStreak-a.bestStreak) || (b.correct-a.correct) || (a.avg-b.avg))[0];
+  $("#leaders").innerHTML = (byCorrect||byStreak)
+    ? `Most Correct: <b>${byCorrect?byCorrect.name:"—"}</b> | Best Streak: <b>${byStreak?byStreak.name:"—"}</b>`
+    : "No data yet";
+}
+function renderAllHistoryTable(){
+  const who=$("#playerFilter").value || "__ALL__";
+  const rows = (who==="__ALL__") ? store.allRecords : store.allRecords.filter(r=>r.player===who);
+  const tbody=$("#allRecords"); tbody.innerHTML="";
+  rows.slice().reverse().forEach((r,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML = `<td>${rows.length-i}</td><td>${r.player}</td><td>${r.mode}</td><td>${r.prompt}</td><td>${r.answer}</td><td>${r.correctShown}</td><td>${r.ok?"✓":"✗"}</td><td>${twodec(r.timeSec)}</td><td>${r.ts.replace('T',' ').split('.')[0]}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  const sel=$("#playerFilter"); const keep=sel.value;
+  const names=Object.keys(store.allStats).sort((a,b)=>a.localeCompare(b));
+  sel.innerHTML=`<option value="__ALL__">All Players</option>` + names.map(n=>`<option value="${n}">${n}</option>`).join("");
+  if(keep) sel.value=keep;
+}
+
+/* ====== CSV / Send / Import / Clear ====== */
+function toCSV(rows){ const esc=s=>('"'+String(s).replace(/"/g,'""')+'"'); return rows.map(r=>r.map(esc).join(",")).join("\n"); }
+function download(name, text){ const a=document.createElement("a"); a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(text); a.download=name; a.click(); }
+$("#btnDownloadLog").onclick=()=>{
+  const header=["round","player","mode","prompt","answer","correct","ok","time_sec","timestamp"];
+  const data = sessionRecords.map(r => [r.round, r.player, r.mode, r.prompt, r.answer, r.correctShown, r.ok, twodec(r.timeSec), r.ts]);
+  download("records_session.csv", toCSV([header, ...data]));
 };
-el('btnExportJson').onclick=()=>{
-  const blob = new Blob([JSON.stringify(st.logs,null,2)], {type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'esl-logs.json'; a.click();
-};
-el('btnExportCsv').onclick=()=>{
-  const header = ['timestamp','class','name','question','chosen','correct','timeLeft','score','streak'];
-  const lines = [header.join(',')];
-  st.logs.forEach(r=> lines.push([r.ts,r.cls,r.name,('"'+(r.q||'').replace(/"/g,'""')+'"'),('"'+(r.chosen||'').replace(/"/g,'""')+'"'),r.ok,r.left,r.score,r.streak].join(',')));
-  const blob = new Blob([lines.join('\\n')], {type:'text/csv'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'esl-records.csv'; a.click();
-};
-el('btnImport').onclick=()=>{
-  if(!PIN_OK()) return;
-  const input = el('importFile');
-  input.onchange = (e)=>{
-    const f = e.target.files[0]; if(!f) return;
+
+function exportJSON(){ download("esl2_leaderboard.json", JSON.stringify(store)); }
+
+function guardTeacher(actionName="this action"){
+  const pin = prompt(`${actionName}\nEnter teacher PIN:`);
+  return pin === TEACHER_PIN;
+}
+
+function importJSON(){
+  if(!guardTeacher("Import JSON")) return;
+  const input=document.createElement("input");
+  input.type="file"; input.accept="application/json";
+  input.onchange=e=>{
+    const f=e.target.files[0]; if(!f) return;
     const reader = new FileReader();
-    reader.onload = ()=>{ try{ const arr = JSON.parse(reader.result); if(Array.isArray(arr)){ st.logs = arr; saveLocal(); refreshLB(); el('adminStatus').textContent='✅ Imported.'; } }catch(_){ el('adminStatus').textContent='⚠️ Invalid JSON.'; } };
+    reader.onload = ev=>{
+      try{
+        const obj = JSON.parse(ev.target.result);
+        if(obj && obj.allRecords && obj.allStats){
+          store = obj; saveLocal();
+          renderBoard(); renderAllHistoryTable();
+          alert("Imported!");
+        }else alert("Invalid file.");
+      }catch{ alert("Invalid JSON."); }
+    };
     reader.readAsText(f);
   };
   input.click();
-};
-el('btnClear').onclick=()=>{
-  if(!PIN_OK()) return;
-  st.logs=[]; saveLocal(); refreshLB(); el('adminStatus').textContent='✅ Cleared.';
-};
+}
+
+function clearAll(){
+  if(!guardTeacher("Clear ALL Data")) return;
+  if(!confirm("Clear ALL saved data on THIS device?")) return;
+  store={allRecords:[],allStats:{}}; localStorage.removeItem(KEY);
+  renderBoard(); renderAllHistoryTable(); resetAll();
+  alert("All local data cleared on THIS device.");
+}
+
+/* ====== Send to Teacher (Auto) – 固定 URL ====== */
+let lastSent = 0;
+
+async function sendToTeacherAuto(){
+  const rows = store.allRecords.slice(lastSent);
+  if(rows.length===0){ alert("No new records to send."); return; }
+
+  // 將未送出的紀錄一次打包 POST，符合最新的 GAS 端 { rows: [...] } 規格
+  const payloadRows = rows.map(r => ({
+    answeredAt: r.ts,
+    player: r.player,
+    mode: r.mode,
+    prompt: r.prompt,
+    answer: r.answer,
+    correct: r.correctShown,
+    ok: r.ok ? 1 : 0,
+    timeSec: Number(r.timeSec || 0)
+  }));
+
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ rows: payloadRows })
+    });
+
+    let data = {};
+    try { data = await res.json(); } catch (e) {}
+
+    if (data && data.ok) {
+      lastSent = store.allRecords.length; // 只有成功才前進游標
+      alert(`Sent ${data.added || payloadRows.length} row(s). All good!`);
+    } else {
+      const msg = (data && data.error) ? data.error : `HTTP ${res.status}`;
+      alert(`Failed to send. ${msg}`);
+    }
+  }catch(e){
+    alert("Network error: " + e.message);
+  }
+}
+
+/* ====== Confetti ====== */
+const confettiCanvas=document.getElementById('confettiCanvas');const ctx=confettiCanvas.getContext('2d');
+function sizeCanvas(){ confettiCanvas.width = innerWidth||document.documentElement.clientWidth; confettiCanvas.height = innerHeight||document.documentElement.clientHeight; }
+sizeCanvas(); addEventListener('resize', sizeCanvas);
+function confettiBurst(mult=1){
+  const W=confettiCanvas.width,H=confettiCanvas.height;
+  const colors=["#f87171","#facc15","#34d399","#60a5fa","#a78bfa","#f472b6","#fb923c"];
+  const pieces=[]; const N=Math.floor(140*mult);
+  for(let i=0;i<N;i++){ pieces.push({x:Math.random()*W,y:-20-Math.random()*60,w:6+Math.random()*6,h:10+Math.random()*10,vy:2+Math.random()*4,vx:(Math.random()-0.5)*4*mult,rot:Math.random()*Math.PI*2,vr:(Math.random()-0.5)*0.3,color:colors[(Math.random()*colors.length)|0],alpha:1}); }
+  const start=performance.now();
+  function tick(now){
+    const t=(now-start)/1000; ctx.clearRect(0,0,W,H);
+    pieces.forEach(p=>{ p.x+=p.vx; p.y+=p.vy+0.6*mult; p.rot+=p.vr; p.alpha=Math.max(0,1-t/(1.2+0.4*mult));
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.globalAlpha=p.alpha; ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore(); });
+    if(t<(1.2+0.4*mult)) requestAnimationFrame(tick); else ctx.clearRect(0,0,W,H);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ====== Bindings & init ====== */
+$("#btnNew").onclick=newQ; $("#btnNewBelow").onclick=newQ; $("#btnReveal").onclick=reveal; $("#btnReset").onclick=resetAll;
+$("#btnSetPlayer").onclick=setPlayer;
+$("#btnSend").onclick=sendToTeacherAuto; $("#btnExport").onclick=exportJSON;
+$("#btnImport").onclick=importJSON; $("#btnClearAll").onclick=clearAll;
+$("#btnRefreshHistory").addEventListener("click", ()=>{ renderBoard(); renderAllHistoryTable(); });
+$("#btnDownloadHistory").onclick=()=>{ const who=$("#playerFilter").value||"__ALL__"; const rows=(who==="__ALL__")?store.allRecords:store.allRecords.filter(r=>r.player===who); const header=["idx","player","mode","prompt","answer","correct","ok","time_sec","timestamp"]; const data=rows.map((r,i)=>[i+1,r.player,r.mode,r.prompt,r.answer,r.correctShown,r.ok,twodec(r.timeSec),r.ts]); download(`history_${who==="__ALL__"?"all":who}.csv`, toCSV([header,...data])); };
+$("#playerFilter").addEventListener("change", renderAllHistoryTable);
+$("#picMode").addEventListener("change", ()=>{ if(current && current.item) renderPicFor(current.item); });
+
+// Keyboard: Enter -> next/new
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !e.isComposing){
+    if(!document.activeElement || document.activeElement.tagName !== 'INPUT'){
+      if(currentPlayer){ e.preventDefault(); newQ(); }
+    }
+  }
+});
+
+loadLocal();
+renderBoard(); renderAllHistoryTable();
+updateHUD(); resetTimer();
+if('speechSynthesis' in window){ window.speechSynthesis.onvoiceschanged = ()=>{}; }
 </script>
+
+<!-- ===== Global Leaderboard via Apps Script JSONP (ALL users) ===== -->
+<script>
+(function(){
+  const GAS_EXEC = "https://script.google.com/macros/s/AKfycbysvNuBvluj5-FraAJbfLcFaZizUb8ZUyS5dt1TBwsVFsv87viPzFfjWaTMgJ84Xy9H/exec"; // 已填入你的 /exec
+
+  // GViz 後備（若 GAS 暫時無法取得時，且試算表設為公開可讀）
+  const SHEET_ID = "1vh_9SDYRtxg3TiGnex9ZVXZnvtkiXHs-SW69-T6t6qA";
+  const GID = "0";
+  const GVIZ_URL = "https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/gviz/tq?gid="+GID+"&tqx=out:json";
+
+  const tbody = document.querySelector('#lbTable tbody');
+  const btnRefresh = document.getElementById('lbRefresh');
+  const clsFilter = document.getElementById('lbFilterClass');
+  const nameFilter = document.getElementById('lbFilterName');
+
+  (function ensureRankBadge(){
+    try{
+      const scoreBadge = document.getElementById('score')?.parentElement;
+      const rowWrap = scoreBadge?.parentElement;
+      if (rowWrap && !document.getElementById('globalRankBadge')) {
+        const span = document.createElement('span');
+        span.className = 'badge';
+        span.id = 'globalRankBadge';
+        span.innerHTML = 'Rank: <b id="myRank">—</b>';
+        rowWrap.appendChild(span);
+      }
+    }catch(_){}
+  })();
+
+  function setMyRankText(text){ const el = document.getElementById('myRank'); if (el) el.textContent = text; }
+  function toNum(x){ const n=Number(x); return Number.isFinite(n)?n:0; }
+  function sortRule(a,b){ return (toNum(b.score)-toNum(a.score))||(toNum(b.streak)-toNum(a.streak))||(toNum(a.attempts)-toNum(b.attempts)); }
+  function esc(s){ return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  function render(full){
+    const cf=(clsFilter?.value||'').trim().toLowerCase();
+    const nf=(nameFilter?.value||'').trim().toLowerCase();
+    const filtered = full.filter(r => (!cf || String(r.class).toLowerCase().includes(cf)) && (!nf || String(r.name).toLowerCase().includes(nf)));
+    tbody.innerHTML='';
+    if (!filtered.length){ tbody.innerHTML='<tr><td colspan="6" style="color:#6b7280">No data</td></tr>'; return; }
+    filtered.forEach(r=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML = `<td>${r.rank}</td><td>${esc(r.class)}</td><td>${esc(r.name)}</td>
+                      <td>${toNum(r.score)}</td><td>${toNum(r.streak)}</td><td>${toNum(r.attempts)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  function updateMyBadge(full){
+    try{
+      const st = window.st||{};
+      const me = full.find(r => String(r.class||'').trim().toLowerCase() === String(st.cls||'').trim().toLowerCase()
+                             && String(r.name||'').trim().toLowerCase()  === String(st.name||'').trim().toLowerCase());
+      setMyRankText(me ? (me.rank + ' / ' + full.length) : ('— / ' + full.length));
+    }catch(_){ setMyRankText('—'); }
+  }
+
+  // --- JSONP route ---
+  window.LB_CB = function(payload){
+    try{
+      const arr = (payload && payload.ranks) ? payload.ranks : [];
+      const ranked = arr.slice().sort(sortRule).map((r,i)=> ({...r, rank: (r.rank||i+1)}));
+      window.__GLOBAL_RANKS__ = ranked;
+      render(ranked);
+      updateMyBadge(ranked);
+    }catch(e){ console.error(e); }
+  };
+  function loadJSONP(){
+    return new Promise((resolve,reject)=>{
+      const script = document.createElement('script');
+      const sep = GAS_EXEC.includes('?') ? '&' : '?';
+      script.src = GAS_EXEC + sep + 'action=ranks&format=jsonp&callback=LB_CB&_ts=' + Date.now();
+      script.onerror = reject;
+      script.onload = ()=> resolve(true);
+      document.body.appendChild(script);
+      setTimeout(()=>script.remove(), 2000);
+    });
+  }
+
+  // --- GViz fallback ---
+  function loadGViz(){
+    return new Promise((resolve,reject)=>{
+      const cb = (resp)=>{
+        try{
+          const cols = resp.table.cols.map(c=>(c&&(c.label||c.id)||'').toString().trim());
+          const idx = names => names.map(n=>cols.indexOf(n)).find(i=>i>=0);
+          const iC=idx(['班級','class']), iN=idx(['姓名','name']), iS=idx(['分數','score','總分']), iSt=idx(['連勝','streak']), iA=idx(['答題數','attempts','嘗試數']);
+          const rows = resp.table.rows.map(r => ({
+            class: iC>=0 ? (r.c[iC]?.v ?? '') : '', name: iN>=0 ? (r.c[iN]?.v ?? '') : '',
+            score: toNum(iS>=0 ? (r.c[iS]?.v ?? 0) : 0), streak: toNum(iSt>=0 ? (r.c[iSt]?.v ?? 0) : 0),
+            attempts: toNum(iA>=0 ? (r.c[iA]?.v ?? 0) : 0)
+          })).filter(r=>r.name);
+          // dedupe + rank
+          const m=new Map(); rows.forEach(r=>{
+            const k=(String(r.class||'').trim().toLowerCase()+'|'+String(r.name||'').trim().toLowerCase());
+            if(!m.has(k)) { m.set(k,r); return; }
+            const cur=m.get(k);
+            const better = (sortRule(r,cur) < 0) ? cur : r;
+            m.set(k, better);
+          });
+          const dedup = Array.from(m.values()).sort(sortRule).map((r,i)=>({...r, rank:i+1}));
+          window.__GLOBAL_RANKS__ = dedup;
+          render(dedup);
+          updateMyBadge(dedup);
+          cleanup(); resolve(true);
+        }catch(e){ console.error(e); cleanup(); reject(e); }
+      };
+      window.google = window.google || {};
+      window.google.visualization = window.google.visualization || {};
+      window.google.visualization.Query = window.google.visualization.Query || {};
+      const prev = window.google.visualization.Query.setResponse;
+      window.google.visualization.Query.setResponse = cb;
+      const s=document.createElement('script');
+      s.src = GVIZ_URL + "&_ts=" + Date.now();
+      s.onerror = (e)=>{ cleanup(); reject(e); };
+      document.head.appendChild(s);
+      function cleanup(){ if(prev) window.google.visualization.Query.setResponse = prev;
+        document.querySelectorAll('script[src*="gviz/tq"]').forEach(t=>t.remove()); }
+    });
+  }
+
+  async function refresh(){
+    try{
+      await loadJSONP().catch(async ()=>{ await loadGViz(); });
+    }catch(e){ console.error(e); }
+  }
+
+  document.getElementById('lbRefresh')?.addEventListener('click', refresh);
+  document.getElementById('lbFilterClass')?.addEventListener('input', ()=> window.__GLOBAL_RANKS__ && render(window.__GLOBAL_RANKS__));
+  document.getElementById('lbFilterName')?.addEventListener('input', ()=> window.__GLOBAL_RANKS__ && render(window.__GLOBAL_RANKS__));
+
+  refresh();
+  setInterval(refresh, 10000);
+})();
+</script>
+
 </body>
 </html>
